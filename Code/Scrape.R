@@ -4,7 +4,6 @@ library("rjson")
 library("ggplot2")
 
 
-
 all_races <- getURL("https://int.nyt.com/newsgraphics/2018/live-polls-2018/all-races.json")
 
 all_races <- fromJSON(all_races)
@@ -71,33 +70,33 @@ all_races <-
 
 
 for (racen in 1:nrow(all_races)) {
-    
+
     race <- all_races[racen, "page_id"]
-    
-    scrape <-
+
+    scraped <-
         "https://int.nyt.com/newsgraphics/2018/live-polls-2018/races/%s-timeline.json"
-    
-    scrape <- sprintf(scrape, race)
-    
-    scrape <- getURL(scrape)
-    
-    scrape <- fromJSON(scrape)
- 
-    if (all_races[racen, "n"] + 1 == length(scrape)) {
-        scrape <- scrape[2:length(scrape)]
+
+    scraped <- sprintf(scraped, race)
+
+    scraped <- getURL(scraped)
+
+    scraped <- fromJSON(scraped)
+
+    if (all_races[racen, "n"] + 1 == length(scraped)) {
+        scraped <- scraped[2:length(scraped)]
     }
-       
-    scrape <-
+
+    scraped <-
         data.frame(
-            responses = 1:length(scrape),
+            responses = 1:length(scraped),
             margin = vapply(
-                scrape,
+                scraped,
                 FUN = function(x)
                     x[["margin"]],
                 FUN.VALUE = 1.0
             ),
             error = vapply(
-                scrape,
+                scraped,
                 FUN = function(x)
                     if (is.null(x[["error"]]))
                         NA
@@ -106,11 +105,11 @@ for (racen in 1:nrow(all_races)) {
                 FUN.VALUE = 1.0
             )
         )
-    
-    if (paste0(race, ".csv") %in% list.files("~/2018-live-poll-results/data")) {
+
+    if (paste0(race, ".csv") %in% list.files("Data")) {
         data <-
             read.csv(paste0(
-                "~/2018-live-poll-results/data/",
+                "Data/",
                 race,
                 ".csv"
             ))
@@ -120,29 +119,29 @@ for (racen in 1:nrow(all_races)) {
         marg <- marg[["Rep"]] - marg[["Dem"]]
         marg <- round(marg, 4)
 
-        if (nrow(scrape) != nrow(data)) {
+        if (nrow(scraped) != nrow(data)) {
             warning(paste0(race, ": n differs between scrape and data!"),
                     immediate. = T)
-            cat(paste("Scrape:", nrow(scrape)), "\n")
+            cat(paste("Scrape:", nrow(scraped)), "\n")
             cat(paste("Data:", nrow(data)), "\n")
         }
 
-        if (scrape[nrow(scrape), "margin"] != marg) {
+        if (scrape[nrow(scraped), "margin"] != marg) {
             warning(paste0(race, ": margin differs between scrape and data!"),
                     immediate. = T)
-            cat(paste("Scrape:", scrape[nrow(scrape), "margin"]), "\n")
+            cat(paste("Scrape:", scraped[nrow(scraped), "margin"]), "\n")
             cat(paste("Data:", marg), "\n")
         }
     }
-    
-    
+
+
     png(
         filename = paste0("Charts/", race, ".png"),
         width = 1000,
         height = 400
     )
-    
-    plot <- ggplot(scrape, aes(x = responses, y = -margin)) +
+
+    result_plot <- ggplot(scraped, aes(x = responses, y = -margin)) +
         labs(title = all_races[racen, "name"], subtitle = all_races[racen, "desc"]) +
         coord_cartesian(
             ylim = c(-0.25, 0.25),
@@ -170,13 +169,13 @@ for (racen in 1:nrow(all_races)) {
         fill = "firebrick1",
         alpha = 0.25) +
         geom_line(size = 1,
-                  color = ifelse(scrape$margin < 0, "dodgerblue3", "firebrick3")) +
+                  color = ifelse(scraped$margin < 0, "dodgerblue3", "firebrick3")) +
         theme_minimal() +
         theme(axis.title = element_blank(),
               panel.grid = element_line(linetype = "dashed"))
-    
-    print(plot)
-    
+
+    print(result_plot)
+
     dev.off()
-    
+
 }
