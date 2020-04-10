@@ -1,6 +1,8 @@
 # Project Upshot
 Evaluating NYTimes polling performance.
 
+[Click here for the GitHub repo.](https://github.com/UnlikelyVolcano/project-upshot)
+
 ## Description 
 During the 2018 midterm elections, I saw the NYTimes' live polling data and thought, "I wonder how they're making those charts." So I looked at the source of their website, found the JSON files with the live information, built a scraper, and re-engineered the plots in ggplot2.
 
