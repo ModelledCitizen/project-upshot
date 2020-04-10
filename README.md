@@ -14,5 +14,3 @@ In the meantime, [enjoy the charts.](https://github.com/UnlikelyVolcano/project-
 - Import official election returns
 - Match districts
 - Create tabular & graphcal display -- final result on top of original images.
-
-<p><img alt="Clicky" width="1" height="1" src="//in.getclicky.com/101237072ns.gif" /></p>
